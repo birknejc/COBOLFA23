@@ -75,15 +75,16 @@
 
        2100-OUTPUT.
            PERFORM VARYING ST-SLM-NUM FROM 1 BY 1
-               UNTIL ST-DAY > 15.
-                   PERFORM VARYING ST-DAY FROM 1 BY 1
-                       UNTIL ST-DAY > 7.
-           MOVE SALESPERSON(ST-SLM-NUM) TO O-SALESPERSON.
-           MOVE DAYTOTAL(ST-SLM-NUM, ST-DAY) TO O-DAILY-AMT.
-           WRITE SUMMARY-REC FROM DETAIL-LINE
-               AFTER ADVANCING PAGE.
+               UNTIL ST-SLM-NUM > 15
+               PERFORM VARYING ST-DAY FROM 1 BY 1
+                   UNTIL ST-DAY > 7
+                   MOVE SALESPERSON(ST-SLM-NUM) TO O-SALESPERSON
+                   MOVE DAYTOTAL(ST-SLM-NUM, ST-DAY) TO O-DAILY-AMT
+                       WRITE SUMMARY-REC FROM DETAIL-LINE
+                           AFTER ADVANCING 1 LINE.
 
 
+       
 
        2200-CALC.
            ADD ST-AMOUNT TO DAYTOTAL(ST-SLM-NUM,ST-DAY).
