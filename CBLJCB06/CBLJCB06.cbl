@@ -42,6 +42,7 @@
        WORKING-STORAGE SECTION.
        01 SALESTABLE.
            05 SALESPERSON      OCCURS 16 TIMES.
+               10 S-NAME           PIC X(25).
                10 DAILYTOTAL       PIC S9(9)V99 OCCURS 8 TIMES.
 
        01 FURN-CATEGORIES.
@@ -90,6 +91,8 @@
            05 FILLER               PIC XXX     VALUE SPACES.
            05 O-DAILY-AMT          PIC $$$,$$$.99    OCCURS 8 TIMES.
            05 FILLER               PIC XXX     VALUE SPACES.
+           05 O-WEEKLY-AMT         PIC $$$,$$$.99.
+
 
        PROCEDURE DIVISION.
        0000-MAIN.
@@ -122,20 +125,24 @@
                PERFORM 2100-OUTPUT
                    VARYING ST-SLM-NUM FROM 1 BY 1
                        UNTIL ST-SLM-NUM > 15.
+               
 
 
        2100-OUTPUT.
            PERFORM 2110-OUTPUT
                VARYING ST-DAY FROM 1 BY 1
                    UNTIL ST-DAY > 7.
-           MOVE ST-SLM-NAME TO O-SALESPERSON.
-           WRITE SUMMARY-REC FROM DETAIL-LINE
-               AFTER ADVANCING 1 LINE.
+           IF DAILYTOTAL(ST-SLM-NUM,8) GREATER THAN 0
+               WRITE SUMMARY-REC FROM DETAIL-LINE
+                   AFTER ADVANCING 1 LINE.
        
 
        2110-OUTPUT.
-      *    MOVE ST-SLM-NAME TO O-SALESPERSON.
+           MOVE S-NAME(ST-SLM-NUM) TO O-SALESPERSON.
            MOVE DAILYTOTAL(ST-SLM-NUM, ST-DAY) TO O-DAILY-AMT(ST-DAY).
+           MOVE DAILYTOTAL(ST-SLM-NUM,8) TO O-WEEKLY-AMT.
+
+
 
 
 
@@ -158,4 +165,9 @@
 
        9000-READ.
            READ SALESFILE
-               AT END MOVE 'N' TO MORE-RECS.
+               AT END MOVE 'N' TO MORE-RECS
+               NOT AT END
+                   MOVE ST-SLM-NAME TO S-NAME(ST-SLM-NUM).
+           
+      *    DISPLAY "SALESPERSON NAME: " ST-SLM-NAME.
+      *    ACCEPT I-VAR.
